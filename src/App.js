@@ -1,24 +1,23 @@
-import logo from './logo.svg';
-import './App.css';
+import { RouterProvider } from "react-router-dom";
+import "./App.scss";
+import { router } from "./router";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { ToastContainer } from "react-toastify";
 
+export const queryClient = new QueryClient({});
+queryClient.setMutationDefaults(["api"], {
+  onError: (response) => {
+    if (!response.status) {
+      return response.showErrorAlerts?.();
+    }
+  },
+});
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router(queryClient)} />
+      <ToastContainer />
+    </QueryClientProvider>
   );
 }
 

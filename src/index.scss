@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+html{
+  font-family: sans-serif;
+  line-height: 1.15;
+}
+@layer components {
+  .flex-center{
+      @apply flex justify-center items-center
+  }
+  .active-link {
+      @apply text-theme border-theme border-r-4 border-solid
+  }
+  .active-link-text{
+      @apply text-gray-700 
+  }
+  .uploader-file-preview {
+      @apply absolute left-0 w-full flex
+  }
+  .file-preview{
+      @apply bg-blue-100 h-full rounded w-1/12 mr-3 relative overflow-hidden
+  }
+  .error {
+      @apply border-red-500 
+  }
+}
+@layer utilities {
+  .uploader-file-preview-settings{
+      top: -150px;
+      height: 150px;
+  }
+  .absolute-center {
+      position: absolute;
+      top:50%;
+      left:50%;
+      transform:translate(-50%, -50%);
+  }
+  .theme-transparent-bg{
+      background-color:#0000002b;
+  }
+  .chat-box-min-h {
+      min-height:10%;
+  }
+  .chat-box-h {
+      height:10%;
+  }
+  .h-chat-body-min{
+      height: 80%;
+  }
+  .chat-box-body-min-h {
+      min-height:80%;
+  }
+  .rounded-t-r-none {
+      border-top-right-radius:0;
+  }
+  .rounded-t-l-none {
+      border-top-left-radius:0;
+  }
+  .rounded-b-r-none {
+      border-bottom-right-radius:0;
+  }
+  .rounded-b-l-none {
+      border-bottom-left-radius:0;
+  }
+  .h-auto{
+      height:auto;
+  }
+  .bg-grey-lighter {
+      background-color: #f3f7f9;
+  }
+  .bg-grey-lightest {
+      background-color: #fafcfc;
+  }
+  .bg-user-gray{
+    background-color: #6a7175;
+  }
+  .bg-chat-color{
+    background-color: #dad3cc;
+  }
+  .bg-theme-color{
+    background-color: rgb(68, 147, 136);
+  }
+  .text-teal {
+      color: #4dc0b5;
+  }.text-purple {
+      color: #9561e2;
+  }
+  .text-orange {
+      color: #f6993f;
+  }
+}

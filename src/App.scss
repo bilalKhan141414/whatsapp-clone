@@ -1,0 +1,35 @@
+@import './animation.scss';
+
+#typing {
+	display: none;
+	margin: 10px 10px;
+
+  .bubble {
+    background: #eaeaea;
+    padding: 8px 13px 9px 13px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+        
+    .ellipsis {
+      width: 5px;
+      height: 5px;
+      display: inline-block;
+      background: #79c7c5;
+      border-radius: 50%;
+      animation: bounce 1.3s linear infinite;
+    }
+
+    .one {
+      animation-delay: 0.6s;
+    }
+
+    .two {
+      animation-delay: 0.5s;
+    }
+
+    .three {
+      animation-delay: 0.8s;
+    }
+  }
+}
