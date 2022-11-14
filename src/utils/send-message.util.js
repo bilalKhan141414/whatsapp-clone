@@ -48,6 +48,7 @@ class SendMessageManager {
     );
     this.formElement.reset(0);
     this.#setUserInputByFriend("");
+    this.#scrollToBottom();
   };
   sendUserTyping = () => {
     if (!this.isTyping) {

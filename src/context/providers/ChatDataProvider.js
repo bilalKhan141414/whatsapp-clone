@@ -24,14 +24,27 @@ const ChatDataProvider = ({
 
   const isSearchResult = queryString?.search?.length > 0;
   const userData = isSearchResult ? users?.data : userDetails?.data?.friends;
-  const { handleSetMessage, resetChat, messages } = useChatManager();
+  const {
+    handleSetMessage,
+    resetChat,
+    setMessages,
+    setmsgApiData,
+    updateStatus,
+    loadingChatMessages,
+    messages,
+  } = useChatManager();
 
   const { handleChatSelection, selectedUser } = useChatSelection(
     userData,
     resetChat
   );
 
-  const { socketManager } = useSocketManager(setTyping, handleSetMessage);
+  const { socketManager } = useSocketManager({
+    setTyping,
+    handleSetMessage,
+    setMessages,
+    updateStatus,
+  });
 
   return (
     <ChatProvider
@@ -43,8 +56,12 @@ const ChatDataProvider = ({
         isSearchResult,
         typing,
         messages,
+        loadingChatMessages,
+        setMessages,
+        setmsgApiData,
         handleSetMessage,
         setTyping,
+        updateStatus,
         getUploadeFile,
         handleOnKeyPress,
         handleOnChange: (event) => setMessage(event.target.value),
@@ -52,6 +69,7 @@ const ChatDataProvider = ({
         emitFetchFriendStatus: socketManager.emitFetchFriendStatus,
         emitTypingStatus: socketManager.emitTypingStatus,
         emitMessage: socketManager.emitMessage,
+        emitMessageStatus: socketManager.emitMessageStatus,
       }}>
       {children}
     </ChatProvider>

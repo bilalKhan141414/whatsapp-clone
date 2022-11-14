@@ -22,7 +22,6 @@ export default function Login({ location }) {
     loginMutation,
     {
       onSuccess: (response) => {
-        console.log("onSuccess::", response);
         localStorageHelpers.UserData = response;
         navigate("/");
       },

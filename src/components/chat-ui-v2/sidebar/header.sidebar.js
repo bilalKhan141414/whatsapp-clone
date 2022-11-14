@@ -1,14 +1,11 @@
 import React from "react";
+import { UserSingleIcon } from "../user-icon/user-single-icon";
 
 const Header = ({ userDetails }) => {
   return (
     <div className='py-2 px-3 bg-grey-lighter flex flex-row justify-between items-center'>
       <div>
-        <img
-          className='w-10 h-10 rounded-full'
-          src='http://andressantibanez.com/res/avatar.png'
-          alt={""}
-        />
+        <UserSingleIcon src={userDetails.profile} />
       </div>
       <div className='flex-1 ml-3 capitalize'>{userDetails?.userName}</div>
 

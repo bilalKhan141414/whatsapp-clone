@@ -2,12 +2,9 @@
 import { useEffect } from "react";
 import { socketManager } from "../../utils/sockets/socket-manager.util";
 
-export const useSocketManager = (setTyping, handleSetMessage) => {
+export const useSocketManager = (reactHandlers) => {
   useEffect(() => {
-    socketManager.init({
-      setTyping,
-      handleSetMessage,
-    });
+    socketManager.init(reactHandlers);
     socketManager.connect();
   }, []);
   return {

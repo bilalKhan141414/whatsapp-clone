@@ -21,7 +21,8 @@ export const useChatSelection = (userData, resetChat) => {
     setQueryString({
       friend: friendId,
     });
-    resetChat();
+
+    selectedUser?._id !== friendId && resetChat();
   };
 
   useEffect(() => {

@@ -6,7 +6,7 @@ export class MessageDto {
     this.text = text;
     this.from = from;
     this.to = to;
-    this.date = new Date().toISOString();
+    this.date = new Date();
   }
   get ServerMessage() {
     return {
@@ -15,6 +15,7 @@ export class MessageDto {
       from: this.from,
       to: this.to,
       date: this.date,
+      allowScroll: true,
     };
   }
 }

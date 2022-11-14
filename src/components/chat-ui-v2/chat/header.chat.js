@@ -57,7 +57,7 @@ const ChatPreview = () => {
         <UserSingleIcon dimensions={"w-10 h-10"} src={selectedUser?.profile} />
       </div>
       <div className='ml-4'>
-        <p className='text-grey-darkest'>{selectedUser?.userName}</p>
+        <p className='text-grey-darkest capitalize'>{selectedUser?.userName}</p>
         <p className='text-grey-darker text-xs mt-1'>
           {typing?.userId === selectedUser?._id && typing?.typing
             ? "typing..."

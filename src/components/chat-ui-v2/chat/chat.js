@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-// import { ChatLoader } from "../loaders/chat.loader";
-import { useEffect } from "react";
+import { ChatLoader } from "../loaders/chat.loader";
+import { useEffect, useRef } from "react";
 import { useSendMessage } from "../../../hooks/chat/useSendMessage";
 import { useChatContext } from "../../../shared/custom-hooks/useChatContext";
 import { useQueryString } from "../../../shared/custom-hooks/useQueryString";
@@ -10,14 +10,62 @@ import { ChatHeader } from "./header.chat";
 import { DateLabel, NotificationLabel } from "./labels";
 import ChatMessage from "./message.chat";
 
+const getFormatedTime = (fullDate) => {
+  const date = new Date(fullDate);
+  const formatedDate = date.toLocaleTimeString();
+  const firstPart = formatedDate.split(" ")[0].split(":");
+  return `${firstPart[0]}:${firstPart[1]} ${formatedDate.split(" ")[1]}`;
+};
+let lastDate = null;
+
+const GetDateChange = ({ date }) => {
+  const today = new Date().toLocaleDateString();
+  let yesterDay = new Date();
+  yesterDay.setDate(new Date().getDate() - 1);
+  yesterDay = yesterDay.toLocaleDateString();
+  const dateObject = new Date(date);
+  const currentDate = dateObject.toLocaleDateString();
+  if (lastDate !== currentDate) {
+    const todaysMsg = today === currentDate;
+    const yesterDayMsg = yesterDay === currentDate;
+    const foramtedDate = todaysMsg
+      ? "Today"
+      : yesterDayMsg
+      ? "Yesterday"
+      : dateObject.toLocaleDateString("en-us", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+
+    lastDate = currentDate;
+    return <DateLabel key={date} date={foramtedDate} />;
+  }
+};
 export const ChatContainer = () => {
-  const {} = useSendMessage();
+  lastDate = null;
+  useSendMessage();
   const { queryString } = useQueryString();
-  const { emitFetchFriendStatus, messages } = useChatContext();
+  const chatContainerRef = useRef(null);
+  const {
+    emitFetchFriendStatus,
+    // setmsgApiData,
+    messages,
+    selectedUser,
+    loadingChatMessages,
+  } = useChatContext();
+  useEffect(() => {
+    const handleScroll = (e) => {};
+    document.addEventListener("scroll", handleScroll);
+    return () => {
+      document.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   useEffect(() => {
     if (queryString.friend) {
-      emitFetchFriendStatus(queryString.friend, (status) => {
+      emitFetchFriendStatus(queryString.friend, ({ status }) => {
         console.log("friendstatus :: ", status);
       });
     }
@@ -28,96 +76,37 @@ export const ChatContainer = () => {
       <ChatHeader />
       <div
         id={`chat-container`}
+        ref={chatContainerRef}
         className='flex-1 overflow-auto relative'
         style={{ backgroundColor: "#DAD3CC" }}>
-        {/* <ChatLoader /> */}
+        {loadingChatMessages && <ChatLoader />}
         <div className='py-2 px-3 '>
-          <DateLabel />
           <NotificationLabel />
-          {messages?.length > 0 &&
+          {!loadingChatMessages &&
+            messages?.length > 0 &&
             messages.map((message, index) => {
               return (
                 <ChatMessage
+                  key={index}
                   isReply={message.from === localStorageHelpers.User.id}
                   message={{
-                    userName: message.userName,
+                    id: message.id,
+                    userName: selectedUser.userName,
                     text: message.text,
-                    time: new Date(message.date).toLocaleTimeString(),
+                    time: getFormatedTime(message.date),
+                    status: message.status,
+                    to: message.to,
+                    from: message.from,
+                    allowScroll: message.allowScroll,
                   }}
-                  serverMessage={message.ServerMessage}
-                />
+                  serverMessage={message.ServerMessage}>
+                  <GetDateChange date={message.date} />
+                </ChatMessage>
               );
             })}
-          {/* <ChatMessage
-            message={{
-              userNameColor: "text-teal",
-              userName: "Sylverter Stallone",
-              text: "Hi everyone! Glad you could join! I am making a new movie.",
-              time: "12:45 pm",
-            }}
-          />
-          <ChatMessage
-            message={{
-              userNameColor: "text-purple",
-              userName: "Tom Cruise",
-              text: "Hi all! I have one question for the movie",
-              time: "12:45 pm",
-            }}
-          />
-          <ChatMessage
-            message={{
-              userNameColor: "text-orange",
-              userName: "Harrison Ford",
-              text: "Again?",
-              time: "12:45 pm",
-            }}
-          />
-          <ChatMessage
-            message={{
-              userNameColor: "text-orange",
-              userName: "Russell Crowe",
-              text: "Is Andrés coming for this one?",
-              time: "12:45 pm",
-            }}
-          />
-          <ChatMessage
-            message={{
-              userNameColor: "text-teal",
-              userName: "Sylverter Stallone",
-              text: "He is. Just invited him to join.",
-              time: "12:45 pm",
-            }}
-          />
-          <ChatMessage
-            message={{
-              userNameColor: "",
-              userName: "",
-              text: "Hi guys.",
-              time: "12:45 pm",
-            }}
-            isReply
-          />
-          <ChatMessage
-            message={{
-              userNameColor: "",
-              userName: "",
-              text: "Count me in",
-              time: "12:45 pm",
-            }}
-            isReply
-          />
-          <ChatMessage
-            message={{
-              userNameColor: "text-purple",
-              userName: "Tom Cruise",
-              text: "Get Andrés on this movie ASAP!",
-              time: "12:45 pm",
-            }}
-          /> */}
         </div>
       </div>
 
-      {/* Chat-Footer */}
       <ChatFooter />
     </div>
   );
