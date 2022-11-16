@@ -1,11 +1,14 @@
 import { v4 as uuid } from "uuid";
+import { localStorageHelpers } from "../shared/Helpers/general";
 
 export class MessageDto {
-  constructor(text, from, to) {
+  constructor(text, from, to, chatId) {
     this.id = uuid();
     this.text = text;
     this.from = from;
     this.to = to;
+    this.chatId = chatId;
+    this.isReply = this.from === localStorageHelpers.User.id;
     this.date = new Date();
   }
   get ServerMessage() {
@@ -15,7 +18,7 @@ export class MessageDto {
       from: this.from,
       to: this.to,
       date: this.date,
-      allowScroll: true,
+      chatId: this.chatId,
     };
   }
 }

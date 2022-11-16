@@ -10,7 +10,7 @@ import { ChatHeader } from "./header.chat";
 import { DateLabel, NotificationLabel } from "./labels";
 import ChatMessage from "./message.chat";
 
-const getFormatedTime = (fullDate) => {
+export const getFormatedTime = (fullDate) => {
   const date = new Date(fullDate);
   const formatedDate = date.toLocaleTimeString();
   const firstPart = formatedDate.split(" ")[0].split(":");
@@ -51,6 +51,7 @@ export const ChatContainer = () => {
   const {
     emitFetchFriendStatus,
     // setmsgApiData,
+    setIsSelectedUserOnline,
     messages,
     selectedUser,
     loadingChatMessages,
@@ -66,7 +67,7 @@ export const ChatContainer = () => {
   useEffect(() => {
     if (queryString.friend) {
       emitFetchFriendStatus(queryString.friend, ({ status }) => {
-        console.log("friendstatus :: ", status);
+        setIsSelectedUserOnline(status);
       });
     }
   }, [queryString.friend]);
@@ -91,13 +92,12 @@ export const ChatContainer = () => {
                   isReply={message.from === localStorageHelpers.User.id}
                   message={{
                     id: message.id,
-                    userName: selectedUser.userName,
+                    userName: selectedUser?.userName,
                     text: message.text,
                     time: getFormatedTime(message.date),
                     status: message.status,
                     to: message.to,
                     from: message.from,
-                    allowScroll: message.allowScroll,
                   }}
                   serverMessage={message.ServerMessage}>
                   <GetDateChange date={message.date} />

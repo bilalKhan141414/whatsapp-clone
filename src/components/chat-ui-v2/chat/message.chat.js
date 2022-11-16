@@ -11,14 +11,14 @@ const ChatMessage = ({
   children,
   isGroup,
 }) => {
-  const [setIsSending] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const { emitMessage, emitMessageStatus, updateStatus } = useChatContext();
   useEffect(() => {
     if (serverMessage) {
       setIsSending(true);
       emitMessage(encode(serverMessage), (status) => {
         setIsSending(false);
-        console.log();
+        console.log(status);
         updateStatus(message.id, status);
       });
     }
@@ -45,13 +45,13 @@ const ChatMessage = ({
     if (!isReply && message.status !== MESSAGE_STATUS.SEEN) {
       handleScroll();
       document
-        .getElementById("chat-container")
-        .addEventListener("scroll", handleScroll);
+        ?.getElementById("chat-container")
+        ?.addEventListener("scroll", handleScroll);
     }
     return () => {
       document
-        .getElementById("chat-container")
-        .removeEventListener("scroll", handleScroll);
+        ?.getElementById("chat-container")
+        ?.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
@@ -59,6 +59,7 @@ const ChatMessage = ({
     <>
       {children}
       <div
+        isSending={isSending}
         id={message.id}
         className={`flex mb-2 ${isReply ? "" : "justify-end"}`}>
         <div
@@ -69,16 +70,16 @@ const ChatMessage = ({
               {message?.userName}
             </p>
           )}
-          <div className='flex justify-between items-center flex-wrap'>
+          <div className='flex justify-end items-center flex-wrap'>
             <p className='text-sm '>{message.text}</p>
             <p
               className={`text-right flex justify-end items-end text-mini text-gray-500 ${
                 isReply ? "mt-1" : "mt-3"
-              } ml-2 mb-1 -mr-1`}>
+              } ml-2 mb-1 mt-3 -mr-1`}>
               {message.time}
               {isReply && (
                 <div className='inline-block'>
-                  <span className='invisible'>
+                  <span className='hidden'>
                     <svg
                       width='19px'
                       height='19px'

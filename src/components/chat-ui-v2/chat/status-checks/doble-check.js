@@ -7,7 +7,7 @@ export const DoubleCheck = ({ status }) => {
   if (status === MESSAGE_STATUS.SEEN) color = colorSeen;
   return (
     <svg
-      className={`-mt-1 ${status === MESSAGE_STATUS.SENT ? "-mr-2" : "-mr-1"}`}
+      className={`-mt-1 ${status === MESSAGE_STATUS.SENT ? "-mr-2" : "-mr-0"}`}
       width='19px'
       height='19px'
       viewBox='0 0 27 20'

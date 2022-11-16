@@ -50,7 +50,9 @@ export const ChatHeader = ({ noChat }) => {
   );
 };
 const ChatPreview = () => {
-  const { selectedUser, typing } = useChatContext();
+  const { selectedUser, typing, isSelectedUserOnline } = useChatContext();
+  const isUserTyping = typing?.userId === selectedUser?._id && typing?.typing;
+
   return (
     <div className='flex items-center'>
       <div>
@@ -59,9 +61,7 @@ const ChatPreview = () => {
       <div className='ml-4'>
         <p className='text-grey-darkest capitalize'>{selectedUser?.userName}</p>
         <p className='text-grey-darker text-xs mt-1'>
-          {typing?.userId === selectedUser?._id && typing?.typing
-            ? "typing..."
-            : ""}
+          {isUserTyping ? "typing..." : isSelectedUserOnline ? "Online" : ""}
         </p>
       </div>
     </div>

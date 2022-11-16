@@ -44,7 +44,12 @@ class SendMessageManager {
     //   new MessageDto(text, localStorageHelpers.User.id, to)
     // );
     this.socket.handleSetMessage(
-      new MessageDto(text, localStorageHelpers.User.id, this.friendId)
+      new MessageDto(
+        text,
+        localStorageHelpers.User.id,
+        this.friendId,
+        localStorageHelpers.friendChatIds[this.friendId]
+      )
     );
     this.formElement.reset(0);
     this.#setUserInputByFriend("");
