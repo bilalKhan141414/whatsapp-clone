@@ -16,6 +16,15 @@ class LocalStorageManager {
   get User() {
     return new UserDto(this.userChatData && JSON.parse(this.userChatData).user);
   }
+  get friendChatIds() {
+    return JSON.parse(this.userChatData)?.friendChatIds;
+  }
+  set friendChatIds(data) {
+    localStorage.setItem(
+      this.localStorageKey,
+      JSON.stringify({ ...JSON.parse(this.userChatData), friendChatIds: data })
+    );
+  }
   set UserData(data) {
     if (data) {
       axios.defaults.headers.common["Authorization"] = data.accessToken;

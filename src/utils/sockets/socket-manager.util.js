@@ -44,15 +44,13 @@ class SocketManager extends SocketEmiter {
   };
   #handleMessage = (message, cb) => {
     const decodedMsg = decode(message);
+
     this.react.handleSetMessage({
       ...decodedMsg,
       status: MESSAGE_STATUS.RECEIVED,
     });
+    console.log("working", message);
     cb(MESSAGE_STATUS.RECEIVED);
-    // this.emitMessageStatus({
-    //   id: decodedMsg.from,
-    //   status: MESSAGE_STATUS.RECEIVED,
-    // });
   };
   #handleTyping = (typing) => {
     this.react.setTyping(typing);
@@ -65,7 +63,7 @@ class SocketManager extends SocketEmiter {
     console.log("handleUserConnected::", user);
   };
   #handleOnAny = (event, ...args) => {
-    console.log(event, args);
+    // console.log(event, args);
   };
   #handleOnConnectError = (err) => {
     console.log(err);

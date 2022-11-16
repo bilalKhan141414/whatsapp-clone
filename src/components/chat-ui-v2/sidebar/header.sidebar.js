@@ -5,7 +5,7 @@ const Header = ({ userDetails }) => {
   return (
     <div className='py-2 px-3 bg-grey-lighter flex flex-row justify-between items-center'>
       <div>
-        <UserSingleIcon src={userDetails.profile} />
+        <UserSingleIcon src={userDetails?.profile} />
       </div>
       <div className='flex-1 ml-3 capitalize'>{userDetails?.userName}</div>
 

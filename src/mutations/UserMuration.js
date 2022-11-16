@@ -9,7 +9,7 @@ export const searchUsers = ({ data }) =>
       },
     })
     .then((resp) => {
-      const loginUserId = localStorageHelpers.User._id;
+      const loginUserId = localStorageHelpers.User.id;
       return {
         data: resp.data.data.filter((user) => user._id !== loginUserId),
       };

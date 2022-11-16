@@ -3,11 +3,9 @@ import { useState } from "react";
 import { useQuery } from "react-query";
 import { ChatProvider } from "../../context/chat.context";
 import { useChatManager } from "../../hooks/chat/useChatManager";
-import useChatMutations from "../../hooks/chat/useChatMutations";
 import { useChatSelection } from "../../hooks/chat/useChatSelection";
 import { useSocketManager } from "../../hooks/chat/useSocketManager";
 import { contactDetailQuery } from "../../pages/Chat";
-import { useQueryString } from "../../shared/custom-hooks/useQueryString";
 
 const ChatDataProvider = ({
   message,
@@ -18,45 +16,53 @@ const ChatDataProvider = ({
 }) => {
   const [typing, setTyping] = useState(null);
 
-  const { queryString } = useQueryString();
-  const { data: userDetails } = useQuery(contactDetailQuery());
-  const { users } = useChatMutations();
+  const { data: user, refetch } = useQuery(contactDetailQuery());
 
-  const isSearchResult = queryString?.search?.length > 0;
-  const userData = isSearchResult ? users?.data : userDetails?.data?.friends;
   const {
+    messages,
+    userDetails,
+    loadingChatMessages,
+    updateLastMessage,
     handleSetMessage,
     resetChat,
     setMessages,
     setmsgApiData,
     updateStatus,
-    loadingChatMessages,
-    messages,
-  } = useChatManager();
+  } = useChatManager(user);
 
-  const { handleChatSelection, selectedUser } = useChatSelection(
+  const {
+    selectedUser,
+    isAddingFrined,
     userData,
-    resetChat
-  );
+    isSearchResult,
+    isSelectedUserOnline,
+    setIsSelectedUserOnline,
+    handleChatSelection,
+  } = useChatSelection(userDetails, resetChat, refetch);
 
   const { socketManager } = useSocketManager({
     setTyping,
     handleSetMessage,
     setMessages,
     updateStatus,
+    setIsSelectedUserOnline,
   });
 
   return (
     <ChatProvider
       value={{
         value: message,
-        userDetails: userDetails?.data,
+        userDetails,
         users: userData,
         selectedUser,
         isSearchResult,
         typing,
+        isAddingFrined,
         messages,
         loadingChatMessages,
+        isSelectedUserOnline,
+        updateLastMessage,
+        setIsSelectedUserOnline,
         setMessages,
         setmsgApiData,
         handleSetMessage,

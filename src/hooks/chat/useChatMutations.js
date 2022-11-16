@@ -6,7 +6,10 @@ const useChatMutations = () => {
     ["search-users"],
     searchUsers
   );
-  const { mutate: requestAddFriend } = useMutation(["add-friend"], addFriend);
+  const { mutateAsync: requestAddFriend } = useMutation(
+    ["add-friend"],
+    addFriend
+  );
 
   return {
     users,
