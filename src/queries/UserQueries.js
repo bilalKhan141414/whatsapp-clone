@@ -5,6 +5,7 @@ import { getFirstCommonItem } from "../utils/array.utils";
 export const getUserDetails = () =>
   axios.get("api/user").then((resp) => {
     const user = resp.data;
+    console.log(user)
     if (user?.data) {
       const friendChatIdObj = {};
       user.data.friends.forEach((friend) => {

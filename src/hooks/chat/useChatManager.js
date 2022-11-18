@@ -6,11 +6,13 @@ const msgApiInitialData = {
   start: 0,
   limit: 50,
 };
-const updateLoop = (friends, message) => {
+const updateLoop = (friends, message, status) => {
   var i = friends.length;
   const updatedFriends = [...friends];
   for (; i--; ) {
-    if (friends[i]._id === message.from) {
+    if (updatedFriends[i]._id === message.from) {
+      if (status && updatedFriends[i]?.lastMessage?.id !== message.id)
+        return updatedFriends;
       updatedFriends[i].lastMessage = message;
       return updatedFriends;
     }
@@ -35,20 +37,17 @@ export const useChatManager = (user) => {
       },
       refetchOnWindowFocus: false,
     });
-  const updateLastMessage = (message) => {
+  const updateLastMessage = (message, status) => {
     setUserDetails((prevState) => ({
       ...prevState,
-      friends: [...updateLoop(prevState.friends, message)],
+      friends: [...updateLoop(prevState.friends, message, status)],
     }));
   };
   const handleSetMessage = (message) => {
-    setUserDetails((prevState) => ({
-      ...prevState,
-      friends: [...updateLoop(prevState.friends, message)],
-    }));
     if (message.isReply || message.from === queryString.friend) {
       setMessages((prevstate) => [...prevstate, message]);
     }
+    updateLastMessage(message);
   };
 
   const updateStatus = (msgIds, status) => {
@@ -57,7 +56,7 @@ export const useChatManager = (user) => {
       ...prevStatus.map((msg) => {
         if (messgaeIds.includes(msg.id)) {
           const updatedMsg = { ...msg, status };
-          updateLastMessage(updatedMsg);
+          updateLastMessage(updatedMsg, status);
           return updatedMsg;
         }
         return msg;

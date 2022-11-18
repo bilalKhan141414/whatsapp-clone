@@ -22,18 +22,31 @@ const ChatMessage = ({
         updateStatus(message.id, status);
       });
     }
-    const handleScroll = (e) => {
+    const removeScrollEvent = () =>
+      document
+        .getElementById("chat-container")
+        ?.removeEventListener("scroll", handleScroll);
+
+    const getElements = (e) => {
       const chatContainer = e
         ? e.target
         : document.getElementById("chat-container");
       const msgEleBounds = document
         .getElementById(message.id)
         .getBoundingClientRect();
-      if (msgEleBounds.top < chatContainer.offsetHeight + 100) {
-        document
-          .getElementById("chat-container")
-          .removeEventListener("scroll", handleScroll);
+      return {
+        chatContainer,
+        msgEleBounds,
+      };
+    };
+    const handleScroll = (e) => {
+      const { chatContainer, msgEleBounds } = getElements(e);
 
+      const isMessageVisible =
+        msgEleBounds.top < chatContainer.offsetHeight + 100;
+
+      if (isMessageVisible) {
+        removeScrollEvent();
         updateStatus(message.id, MESSAGE_STATUS.SEEN);
         emitMessageStatus({
           to: message.from,
@@ -47,11 +60,14 @@ const ChatMessage = ({
       document
         ?.getElementById("chat-container")
         ?.addEventListener("scroll", handleScroll);
-    }
-    return () => {
+
       document
-        ?.getElementById("chat-container")
-        ?.removeEventListener("scroll", handleScroll);
+        .getElementById(message.id)
+        ?.addEventListener("click", (e) => handleScroll());
+    }
+
+    return () => {
+      removeScrollEvent();
     };
   }, []);
 
@@ -59,7 +75,7 @@ const ChatMessage = ({
     <>
       {children}
       <div
-        isSending={isSending}
+        data-issending={isSending}
         id={message.id}
         className={`flex mb-2 ${isReply ? "" : "justify-end"}`}>
         <div

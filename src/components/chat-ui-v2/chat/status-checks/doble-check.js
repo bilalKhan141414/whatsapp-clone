@@ -20,14 +20,14 @@ export const DoubleCheck = ({ status }) => {
         strokeLinecap='round'
         strokeLinejoin='round'
       />
-      {status !== MESSAGE_STATUS.SENT && (
+      {status && status !== MESSAGE_STATUS.SENT && (
         <path
           xmlns='http://www.w3.org/2000/svg'
           d='M24.5 7L14.5 18L12 15.5'
           stroke={color}
-          stroke-width='2'
-          stroke-linecap='round'
-          stroke-linejoin='round'
+          strokeWidth='2'
+          strokeLinecap='round'
+          strokeLinejoin='round'
         />
       )}
     </svg>

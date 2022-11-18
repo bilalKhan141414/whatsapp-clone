@@ -15,7 +15,7 @@ import Search from "./search.sidebar";
 const Sidebar = () => {
   const { users, userDetails } = useChatContext();
   return (
-    <div className='w-1/3 border flex flex-col'>
+    <div className='w-full bg-white z-20 h-full absolute top-0 left-0 md:relative md:bg-transparent md:w-1/3 border flex flex-col'>
       <Header userDetails={userDetails} />
       <Search />
       <ContactList users={users} />

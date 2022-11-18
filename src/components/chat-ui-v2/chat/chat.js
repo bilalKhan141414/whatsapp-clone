@@ -73,7 +73,7 @@ export const ChatContainer = () => {
   }, [queryString.friend]);
 
   return (
-    <div className='w-2/3 border flex flex-col'>
+    <div className='w-full h-full absolute top-0 left-0 md:relative md:w-2/3 border flex flex-col chat-container'>
       <ChatHeader />
       <div
         id={`chat-container`}

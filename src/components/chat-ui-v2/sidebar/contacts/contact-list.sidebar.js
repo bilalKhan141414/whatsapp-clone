@@ -8,7 +8,7 @@ const ContactList = ({ users }) => {
   const { handleChatSelection, typing, isAddingFrined } = useChatContext();
 
   return (
-    <div className='bg-grey-lighter flex-1 overflow-auto relative'>
+    <div className='bg-white md:bg-grey-lighter flex-1 overflow-auto relative'>
       {isAddingFrined && <ChatLoader />}
       {users?.map((user, index) => (
         <ContactItem

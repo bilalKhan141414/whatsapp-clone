@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQueryString } from "../../shared/custom-hooks/useQueryString";
 import useChatMutations from "./useChatMutations";
 
@@ -7,6 +7,7 @@ export const useChatSelection = (userDetails, resetChat, refetch) => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isSelectedUserOnline, setIsSelectedUserOnline] = useState(false);
   const [isAddingFrined, setIsAddingFriend] = useState(false);
+  const userDataRef = useRef(null);
 
   const { queryString, setQueryString, removeFromQueryString } =
     useQueryString();
@@ -15,8 +16,12 @@ export const useChatSelection = (userDetails, resetChat, refetch) => {
   const isSearchResult = queryString?.search?.length > 0;
   const userData = isSearchResult ? users?.data : userDetails?.friends;
 
+  useEffect(() => {
+    userDataRef.current = userData;
+  }, [userData]);
+
   const getSelectedUser = (friendId) =>
-    userData?.find((user) => user._id === friendId);
+    userDataRef.current?.find((user) => user._id === friendId);
 
   const handleChatSelection = async (friendId) => {
     if (isSearchResult) {
@@ -26,6 +31,7 @@ export const useChatSelection = (userDetails, resetChat, refetch) => {
       setIsAddingFriend(false);
     }
     setSelectedUser(getSelectedUser(friendId));
+    console.log("handleChatSelection");
     setQueryString({
       friend: friendId,
     });
@@ -38,13 +44,23 @@ export const useChatSelection = (userDetails, resetChat, refetch) => {
   };
 
   useEffect(() => {
-    if (queryString?.search?.length > 0) {
+    if (isSearchResult) {
       searchFriend({ data: queryString?.search });
     }
-    if (queryString?.friend?.length > 0 && userData) {
+    if (
+      !isSearchResult &&
+      queryString?.friend?.length > 0 &&
+      userDataRef.current
+    ) {
+      console.log("settinguser");
       setSelectedUser(getSelectedUser(queryString?.friend));
     }
-  }, [queryString?.friend, queryString?.search, userData]);
+  }, [
+    queryString?.friend,
+    queryString?.search,
+    userDataRef.current,
+    isSearchResult,
+  ]);
 
   return {
     userData,
