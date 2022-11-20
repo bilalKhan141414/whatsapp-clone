@@ -1,9 +1,23 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
-import { MESSAGE_STATUS } from "../../../constants/events.constant";
+import {
+  MESSAGE_STATUS,
+  USER_STATUS,
+} from "../../../constants/events.constant";
 import { useChatContext } from "../../../shared/custom-hooks/useChatContext";
 import { encode } from "../../../utils/encoder.util";
+import CaretIcon from "./caret-icon";
 import { DoubleCheck } from "./status-checks/doble-check";
+const anyThingNotSmily = (str) => {
+  for (var i = 0, n = str.length; i < n; i++) {
+    if (str.charCodeAt(i) <= 255) {
+      return true;
+    }
+  }
+  return false;
+};
+const checkForOnlySmily = (text) => text.length <= 4 && !anyThingNotSmily(text);
+
 const ChatMessage = ({
   message,
   isReply,
@@ -12,15 +26,24 @@ const ChatMessage = ({
   isGroup,
 }) => {
   const [isSending, setIsSending] = useState(false);
-  const { emitMessage, emitMessageStatus, updateStatus } = useChatContext();
+  const { emitMessage, emitMessageStatus, updateStatus, isSelectedUserOnline } =
+    useChatContext();
   useEffect(() => {
     if (serverMessage) {
       setIsSending(true);
-      emitMessage(encode(serverMessage), (status) => {
-        setIsSending(false);
-        console.log(status);
-        updateStatus(message.id, status);
-      });
+      emitMessage(
+        encode({
+          ...serverMessage,
+          userStatus: isSelectedUserOnline
+            ? USER_STATUS.ONLINE
+            : USER_STATUS.OFFLINE,
+        }),
+        (status) => {
+          setIsSending(false);
+          console.log(status);
+          updateStatus(message.id, status);
+        }
+      );
     }
     const removeScrollEvent = () =>
       document
@@ -64,34 +87,63 @@ const ChatMessage = ({
       document
         .getElementById(message.id)
         ?.addEventListener("click", (e) => handleScroll());
+      if (message.userStatus === USER_STATUS.OFFLINE) {
+        console.log("userStatus,", USER_STATUS);
+        emitMessageStatus({
+          to: message.from,
+          id: message.id,
+          status: MESSAGE_STATUS.RECEIVED,
+        });
+      }
     }
 
     return () => {
       removeScrollEvent();
     };
   }, []);
-
+  const onlySmily = checkForOnlySmily(message.text);
   return (
     <>
       {children}
       <div
         data-issending={isSending}
         id={message.id}
-        className={`flex mb-2 ${isReply ? "" : "justify-end"}`}>
+        className={` flex mb-2 ${isReply ? "" : "justify-end"}`}>
         <div
-          className='rounded px-2'
-          style={{ backgroundColor: isReply ? "#E2F7CB" : "#F2F2F2" }}>
+          className={`relative rounded-xl ${
+            !message.sameUser
+              ? isReply
+                ? "rounded-tl-none"
+                : "rounded-tr-none"
+              : ""
+          } px-2`}
+          style={{
+            backgroundColor: onlySmily
+              ? "transparent"
+              : isReply
+              ? "#E2F7CB"
+              : "#F2F2F2",
+            maxWidth: "90%",
+          }}>
+          {!message.sameUser && !onlySmily && <CaretIcon isReply={isReply} />}
           {isGroup && (
             <p className='text-sm text-orange capitalize'>
               {message?.userName}
             </p>
           )}
-          <div className='flex justify-end items-center flex-wrap'>
-            <p className='text-sm '>{message.text}</p>
+          <div
+            className={`flex ${
+              onlySmily ? "flex-col" : "justify-end"
+            } items-center flex-wrap`}>
             <p
-              className={`text-right flex justify-end items-end text-mini text-gray-500 ${
-                isReply ? "mt-1" : "mt-3"
-              } ml-2 mb-1 mt-3 -mr-1`}>
+              className={`${
+                onlySmily ? "w-full text-3xl" : "text-sm"
+              } py-1 whitespace-pre-wrap break-all font-normal`}>
+              {message.text}
+            </p>
+            <p
+              className={`h-7 text-right flex justify-end items-end text-mini text-gray-500  ml-2 -mr-1`}
+              style={{ marginBottom: 3 }}>
               {message.time}
               {isReply && (
                 <div className='inline-block'>

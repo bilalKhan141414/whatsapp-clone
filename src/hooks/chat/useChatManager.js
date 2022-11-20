@@ -1,19 +1,40 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
+import { MESSAGE_STATUS } from "../../constants/events.constant";
 import { getMessages } from "../../queries/MessageQueries";
 import { useQueryString } from "../../shared/custom-hooks/useQueryString";
 const msgApiInitialData = {
   start: 0,
   limit: 50,
 };
+const updateUnSeenCount = (lastMessage, status) => {
+  const { totalUnSeen } = lastMessage;
+  if (status === MESSAGE_STATUS.SEEN) {
+    totalUnSeen >= 1 && lastMessage.totalUnSeen--;
+    return lastMessage;
+  }
+
+  lastMessage.totalUnSeen++;
+  return lastMessage;
+};
 const updateLoop = (friends, message, status) => {
   var i = friends.length;
   const updatedFriends = [...friends];
   for (; i--; ) {
-    if (updatedFriends[i]._id === message.from) {
-      if (status && updatedFriends[i]?.lastMessage?.id !== message.id)
+    if (updatedFriends[i].chatIds.includes(message?.chatId)) {
+      //update last message unseen message count if user is not SENDING reply
+      if (message && !message.isReply) {
+        updatedFriends[i].lastMessage = updateUnSeenCount(
+          { ...updatedFriends[i].lastMessage },
+          message.status
+        );
+      }
+      // if only message seen|un-seen status is updating then no need to update last Message
+      if (status && updatedFriends[i]?.lastMessage?.id !== message.id) {
         return updatedFriends;
-      updatedFriends[i].lastMessage = message;
+      }
+      const { totalUnSeen } = updatedFriends[i].lastMessage;
+      updatedFriends[i].lastMessage = { ...message, totalUnSeen };
       return updatedFriends;
     }
   }

@@ -14,11 +14,7 @@ const ContactList = ({ users }) => {
         <ContactItem
           isSelected={user._id === queryString.friend}
           onClick={handleChatSelection}
-          isTyping={
-            typing?.userId !== queryString.friend &&
-            user._id === typing?.userId &&
-            typing?.typing
-          }
+          isTyping={user._id === typing?.userId && typing?.typing}
           user={user}
           key={index}
         />

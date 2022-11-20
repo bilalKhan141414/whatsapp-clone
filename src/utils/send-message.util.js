@@ -40,9 +40,6 @@ class SendMessageManager {
     });
   };
   #sendMessage = (text) => {
-    // this.messageQueue.enqueue(
-    //   new MessageDto(text, localStorageHelpers.User.id, to)
-    // );
     this.socket.handleSetMessage(
       new MessageDto(
         text,
@@ -68,6 +65,7 @@ class SendMessageManager {
     }
   };
   handleKeyPress = (event) => {
+    console.log("handleKeyPress", event.target.value.length);
     if (
       !this.shiftPress &&
       event.keyCode === 13 &&
@@ -84,6 +82,7 @@ class SendMessageManager {
   };
   handleOnChange = (e) => {
     const { value } = e.target;
+    console.log("handleOnChange", value.length);
     this.#setUserInputByFriend(value);
   };
   handleKeyUp = (event) => {

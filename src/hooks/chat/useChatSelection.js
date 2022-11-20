@@ -31,7 +31,6 @@ export const useChatSelection = (userDetails, resetChat, refetch) => {
       setIsAddingFriend(false);
     }
     setSelectedUser(getSelectedUser(friendId));
-    console.log("handleChatSelection");
     setQueryString({
       friend: friendId,
     });
@@ -42,7 +41,11 @@ export const useChatSelection = (userDetails, resetChat, refetch) => {
     }
     selectedUser?._id !== friendId && resetChat();
   };
-
+  const removeSelectedUser = () => {
+    setSelectedUser(null);
+    removeFromQueryString("friend");
+    resetChat();
+  };
   useEffect(() => {
     if (isSearchResult) {
       searchFriend({ data: queryString?.search });
@@ -70,6 +73,7 @@ export const useChatSelection = (userDetails, resetChat, refetch) => {
     setIsSelectedUserOnline,
     isAddingFrined,
     selectedUser,
+    removeSelectedUser,
     handleChatSelection,
   };
 };
