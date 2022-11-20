@@ -12,10 +12,8 @@ class SocketManager extends SocketEmiter {
     this.Socket.onAny(this.#handleOnAny);
     this.Socket.on(EVENTS.CONNECT_ERROR, this.#handleOnConnectError);
     this.Socket.on(EVENTS.USER_CONNECTED, this.#handleUserConnected);
-    this.Socket.on(EVENTS.FRIEND_STATUS, this.#handleFriendOnlineStatus);
     this.Socket.on(EVENTS.TYPING, this.#handleTyping);
     this.Socket.on(EVENTS.MESSAGE, this.#handleMessage);
-    this.Socket.on(EVENTS.CONNECTED_USERS, this.#handleConnectedUsersList);
     this.Socket.on(EVENTS.MESSAGE_SAVED, this.#handleMessageSavedInDb);
     this.Socket.on(
       EVENTS.MESSAGE_ACKNOWLEDGEMENT,
@@ -49,16 +47,11 @@ class SocketManager extends SocketEmiter {
       ...decodedMsg,
       status: MESSAGE_STATUS.RECEIVED,
     });
-    console.log("working", message);
     cb(MESSAGE_STATUS.RECEIVED);
   };
   #handleTyping = (typing) => {
     this.react.setTyping(typing);
   };
-  #handleFriendOnlineStatus = (status) => {
-    console.log("status::", status);
-  };
-  #handleConnectedUsersList = (users) => {};
   #handleUserConnected = (user) => {
     console.log("handleUserConnected::", user);
   };

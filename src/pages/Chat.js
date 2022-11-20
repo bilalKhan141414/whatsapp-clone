@@ -23,7 +23,7 @@ export default function Chat({ location }) {
   const getUploadeFile = (fileData) => {
     setAttachments((prevState) => [...prevState, fileData]);
   };
-  const isChatSelected = !!queryString?.friend;
+  const isChatSelected = !!queryString?.friend && !queryString?.search;
   return (
     <ChatDataProvider
       message={message}

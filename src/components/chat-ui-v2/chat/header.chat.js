@@ -1,5 +1,6 @@
 import { useChatContext } from "../../../shared/custom-hooks/useChatContext";
 import { UserSingleIcon } from "../user-icon/user-single-icon";
+import BackNavigationButton from "./back-navigation-button";
 
 export const ChatHeader = ({ noChat }) => {
   return (
@@ -55,12 +56,13 @@ const ChatPreview = () => {
 
   return (
     <div className='flex items-center'>
-      <div>
+      <div className='flex justify-center items-center'>
+        <BackNavigationButton />
         <UserSingleIcon dimensions={"w-10 h-10"} src={selectedUser?.profile} />
       </div>
       <div className='ml-4'>
         <p className='text-grey-darkest capitalize'>{selectedUser?.userName}</p>
-        <p className='text-grey-darker text-xs mt-1'>
+        <p className='text-grey-darker text-mini mt-1'>
           {isUserTyping ? "typing..." : isSelectedUserOnline ? "Online" : ""}
         </p>
       </div>

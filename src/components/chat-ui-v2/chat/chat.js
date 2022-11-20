@@ -9,6 +9,7 @@ import ChatFooter from "./footer.chat";
 import { ChatHeader } from "./header.chat";
 import { DateLabel, NotificationLabel } from "./labels";
 import ChatMessage from "./message.chat";
+import { getYesterday } from "../../../utils/date.util";
 
 export const getFormatedTime = (fullDate) => {
   const date = new Date(fullDate);
@@ -20,9 +21,7 @@ let lastDate = null;
 
 const GetDateChange = ({ date }) => {
   const today = new Date().toLocaleDateString();
-  let yesterDay = new Date();
-  yesterDay.setDate(new Date().getDate() - 1);
-  yesterDay = yesterDay.toLocaleDateString();
+  const { yesterDay } = getYesterday();
   const dateObject = new Date(date);
   const currentDate = dateObject.toLocaleDateString();
   if (lastDate !== currentDate) {
@@ -43,8 +42,9 @@ const GetDateChange = ({ date }) => {
     return <DateLabel key={date} date={foramtedDate} />;
   }
 };
+const isSameUser = (index, messages, currentUser) =>
+  index === 0 ? false : messages[index - 1].from === currentUser;
 export const ChatContainer = () => {
-  lastDate = null;
   useSendMessage();
   const { queryString } = useQueryString();
   const chatContainerRef = useRef(null);
@@ -73,7 +73,7 @@ export const ChatContainer = () => {
   }, [queryString.friend]);
 
   return (
-    <div className='w-2/3 border flex flex-col'>
+    <div className='w-full h-full absolute top-0 left-0 md:relative md:w-2/3 z-10 border flex flex-col chat-container'>
       <ChatHeader />
       <div
         id={`chat-container`}
@@ -86,6 +86,7 @@ export const ChatContainer = () => {
           {!loadingChatMessages &&
             messages?.length > 0 &&
             messages.map((message, index) => {
+              if (index === 0) lastDate = null;
               return (
                 <ChatMessage
                   key={index}
@@ -98,6 +99,8 @@ export const ChatContainer = () => {
                     status: message.status,
                     to: message.to,
                     from: message.from,
+                    userStatus: message.userStatus,
+                    sameUser: isSameUser(index, messages, message.from),
                   }}
                   serverMessage={message.ServerMessage}>
                   <GetDateChange date={message.date} />

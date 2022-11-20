@@ -36,6 +36,7 @@ const ChatDataProvider = ({
     userData,
     isSearchResult,
     isSelectedUserOnline,
+    removeSelectedUser,
     setIsSelectedUserOnline,
     handleChatSelection,
   } = useChatSelection(userDetails, resetChat, refetch);
@@ -61,6 +62,8 @@ const ChatDataProvider = ({
         messages,
         loadingChatMessages,
         isSelectedUserOnline,
+        isMobileView: window.innerWidth <= 768,
+        removeSelectedUser,
         updateLastMessage,
         setIsSelectedUserOnline,
         setMessages,

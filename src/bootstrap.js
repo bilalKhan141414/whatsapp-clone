@@ -2,7 +2,6 @@
 /* eslint-disable no-extend-native */
 import axios from "axios";
 import { localStorageHelpers } from "./shared/Helpers/general";
-
 window.ENDPOINT =
   process.env.NODE_ENV === "production"
     ? process.env.REACT_APP_URL_LIVE

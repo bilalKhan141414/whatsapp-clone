@@ -1,10 +1,23 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-html{
-  font-family: sans-serif;
-  line-height: 1.15;
-}
+
+@layer base {
+    @font-face {
+        font-family: 'EmojiMart';
+        src: url('./assets/fonts/seguiemj.ttf') format('truetype');
+    }
+    html{
+        font-family: EmojiMart;
+        line-height: 1.15;
+        font-weight: 700;
+        // letter-spacing: 0.025em;
+    }
+    input{
+        font-weight: 300;
+    }
+  }
+
 @layer components {
   .flex-center{
       @apply flex justify-center items-center
@@ -26,6 +39,13 @@ html{
   }
 }
 @layer utilities {
+    .emoji-font-family
+    .helvatica-regular{
+        font-family: hel-regular;
+    }
+    .helvatica-bold{
+        font-family: hel-bold;
+    }
   .uploader-file-preview-settings{
       top: -150px;
       height: 150px;
@@ -73,7 +93,7 @@ html{
       background-color: #fafcfc;
   }
   .bg-user-gray{
-    background-color: #6a7175;
+    background-color: #c3ced5;
   }
   .bg-chat-color{
     background-color: #dad3cc;
@@ -94,9 +114,10 @@ html{
     line-height: 1rem;
   }
   .bg-theme-light-green{
-    background-color: #00a884;
+    background-color: #3db742;
   }
   .theme-light-green{
-    color: #00a884;
+    // color: #00a884;
+    color: #3db742;
   }
 }

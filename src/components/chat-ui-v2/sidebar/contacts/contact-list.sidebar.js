@@ -8,17 +8,13 @@ const ContactList = ({ users }) => {
   const { handleChatSelection, typing, isAddingFrined } = useChatContext();
 
   return (
-    <div className='bg-grey-lighter flex-1 overflow-auto relative'>
+    <div className='bg-white md:bg-grey-lighter flex-1 overflow-auto relative'>
       {isAddingFrined && <ChatLoader />}
       {users?.map((user, index) => (
         <ContactItem
           isSelected={user._id === queryString.friend}
           onClick={handleChatSelection}
-          isTyping={
-            typing?.userId !== queryString.friend &&
-            user._id === typing?.userId &&
-            typing?.typing
-          }
+          isTyping={user._id === typing?.userId && typing?.typing}
           user={user}
           key={index}
         />
