@@ -1,11 +1,15 @@
-import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useRef, useState } from "react";
 import { MESSAGE_STATUS } from "../../constants/events.constant";
-import { getMessages } from "../../queries/MessageQueries";
 import { useQueryString } from "../../shared/custom-hooks/useQueryString";
+import useChatMutations from "./useChatMutations";
 const msgApiInitialData = {
   start: 0,
   limit: 50,
+};
+const initMessages = {
+  messages: [],
+  ...msgApiInitialData,
 };
 const updateUnSeenCount = (lastMessage, status) => {
   const { totalUnSeen } = lastMessage;
@@ -17,22 +21,25 @@ const updateUnSeenCount = (lastMessage, status) => {
   lastMessage.totalUnSeen++;
   return lastMessage;
 };
-const updateLoop = (friends, message, status) => {
+const updateLoop = (friends, message) => {
   var i = friends.length;
   const updatedFriends = [...friends];
   for (; i--; ) {
     if (updatedFriends[i].chatIds.includes(message?.chatId)) {
-      //update last message unseen message count if user is not SENDING reply
+      if (!updatedFriends[i].lastMessage) {
+        updatedFriends[i].lastMessage = { ...message };
+      }
+      //Response
+      //update ONLY last message unseen message count if user is not SENDING reply
       if (message && !message.isReply) {
         updatedFriends[i].lastMessage = updateUnSeenCount(
           { ...updatedFriends[i].lastMessage },
           message.status
         );
       }
-      // if only message seen|un-seen status is updating then no need to update last Message
-      if (status && updatedFriends[i]?.lastMessage?.id !== message.id) {
-        return updatedFriends;
-      }
+
+      //Reply
+      // update the last message of selected user
       const { totalUnSeen } = updatedFriends[i].lastMessage;
       updatedFriends[i].lastMessage = { ...message, totalUnSeen };
       return updatedFriends;
@@ -40,61 +47,114 @@ const updateLoop = (friends, message, status) => {
   }
   return updatedFriends;
 };
-export const useChatManager = (user) => {
-  const [messages, setMessages] = useState([]);
-  const [msgApiData, setmsgApiData] = useState(msgApiInitialData);
+export const useChatManager = (user, selectedUser) => {
+  const [messages, setMessages] = useState(initMessages);
   const [userDetails, setUserDetails] = useState(null);
+  const messagesRef = useRef({});
+  const selectedChatIdRef = useRef(null);
 
   useEffect(() => {
     setUserDetails(user);
   }, [user]);
 
   const { queryString } = useQueryString();
+  const { userMessages, isLoadingMessages, requestFetchMessages } =
+    useChatMutations();
 
-  const { isLoading: isLoadingMessages, isFetching: isFetchingMessages } =
-    useQuery(["api-messages", queryString.friend, msgApiData], getMessages, {
-      onSuccess: (response) => {
-        setMessages(response.data);
-      },
-      refetchOnWindowFocus: false,
-    });
-  const updateLastMessage = (message, status) => {
+  useEffect(() => {
+    if (selectedUser && selectedChatIdRef.current !== selectedUser.chatId) {
+      const seletedUserChat = messagesRef?.current[selectedUser.chatId];
+      selectedChatIdRef.current = selectedUser.chatId;
+      if (seletedUserChat) {
+        setMessages(seletedUserChat);
+        return;
+      }
+      requestFetchMessages({
+        chatId: selectedUser.chatId,
+        ...msgApiInitialData,
+      });
+    }
+  }, [selectedUser]);
+
+  useEffect(() => {
+    if (userMessages?.messages?.length) {
+      const { chatId, ...restUserMsgs } = userMessages;
+      const existingChat = messagesRef.current[chatId];
+      //if fisrt time chat opens
+      if (!restUserMsgs.start) {
+        messagesRef.current[chatId] = restUserMsgs;
+        setMessages(restUserMsgs);
+        return;
+      }
+      //else user is scrolling to view old messages
+      const { start: newStart, limit: newLimit } = restUserMsgs;
+      const { start, limit } = existingChat;
+
+      if (start !== newStart && limit !== newLimit) {
+        restUserMsgs.messages.push(...existingChat.messages);
+
+        messagesRef.current[chatId] = restUserMsgs;
+        setMessages(restUserMsgs);
+      }
+    } else {
+      if (userMessages?.isDone && messagesRef.current[userMessages?.chatId]) {
+        messagesRef.current[userMessages?.chatId].isDone = true;
+        setMessages((prevState) => ({
+          ...prevState,
+          isDone: true,
+        }));
+      }
+    }
+  }, [userMessages]);
+
+  const updateLastMessage = (message) => {
     setUserDetails((prevState) => ({
       ...prevState,
-      friends: [...updateLoop(prevState.friends, message, status)],
+      friends: [...updateLoop(prevState.friends, message)],
     }));
   };
+
   const handleSetMessage = (message) => {
     if (message.isReply || message.from === queryString.friend) {
-      setMessages((prevstate) => [...prevstate, message]);
+      setMessages((prevState) => ({
+        ...prevState,
+        messages: [...prevState.messages, message],
+      }));
     }
     updateLastMessage(message);
   };
 
   const updateStatus = (msgIds, status) => {
     const messgaeIds = typeof msgIds === "string" ? [msgIds] : msgIds;
-    setMessages((prevStatus) => [
-      ...prevStatus.map((msg) => {
-        if (messgaeIds.includes(msg.id)) {
-          const updatedMsg = { ...msg, status };
-          updateLastMessage(updatedMsg, status);
-          return updatedMsg;
-        }
-        return msg;
-      }),
-    ]);
+    setMessages((prevStatus) => ({
+      ...prevStatus,
+      messages: [
+        ...prevStatus.messages.map((msg) => {
+          if (messgaeIds.includes(msg.id)) {
+            const updatedMsg = { ...msg, status };
+            selectedUser?.lastMessage?.id === msg.id &&
+              updateLastMessage(updatedMsg);
+            return updatedMsg;
+          }
+          return msg;
+        }),
+      ],
+    }));
   };
 
-  const resetChat = () => setMessages([]);
+  const resetChat = () => {
+    selectedChatIdRef.current = null;
+    setMessages(initMessages);
+  };
   return {
     userDetails,
-    loadingChatMessages: isLoadingMessages || isFetchingMessages,
-    messages,
+    loadingChatMessages: isLoadingMessages,
+    messageDetails: messages,
     resetChat,
     updateStatus,
-    setmsgApiData,
     setMessages,
     updateLastMessage,
+    requestFetchMessages,
     handleSetMessage,
   };
 };

@@ -9,7 +9,7 @@ export class MessageDto {
     this.to = to;
     this.chatId = chatId;
     this.isReply = this.from === localStorageHelpers.User.id;
-    this.date = new Date();
+    this.date = new Date().getTime();
   }
   get ServerMessage() {
     return {

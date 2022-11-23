@@ -55,11 +55,13 @@ const ContactItem = ({ user, onClick, isSelected, isTyping }) => {
 
         <div className='flex items-center justify-between'>
           <div className='flex items-center '>
-            <DoubleCheck
-              horizontalViewPort={29}
-              noMargin
-              status={user?.lastMessage?.status}
-            />
+            {user?.lastMessage?.status && (
+              <DoubleCheck
+                horizontalViewPort={29}
+                noMargin
+                status={user?.lastMessage?.status}
+              />
+            )}
             <p
               className={`${
                 isTyping ? "theme-light-green" : "text-gray-500"

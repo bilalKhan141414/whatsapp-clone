@@ -51,13 +51,14 @@ export const ChatHeader = ({ noChat }) => {
   );
 };
 const ChatPreview = () => {
-  const { selectedUser, typing, isSelectedUserOnline } = useChatContext();
+  const { selectedUser, typing, isSelectedUserOnline, isMobileView } =
+    useChatContext();
   const isUserTyping = typing?.userId === selectedUser?._id && typing?.typing;
 
   return (
     <div className='flex items-center'>
       <div className='flex justify-center items-center'>
-        <BackNavigationButton />
+        {isMobileView && <BackNavigationButton />}
         <UserSingleIcon dimensions={"w-10 h-10"} src={selectedUser?.profile} />
       </div>
       <div className='ml-4'>

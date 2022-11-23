@@ -3,8 +3,13 @@ import { useEffect, useRef, useState } from "react";
 import { useQueryString } from "../../shared/custom-hooks/useQueryString";
 import useChatMutations from "./useChatMutations";
 
-export const useChatSelection = (userDetails, resetChat, refetch) => {
-  const [selectedUser, setSelectedUser] = useState(null);
+export const useChatSelection = (
+  userDetails,
+  resetChat,
+  refetch,
+  selectedUser,
+  setSelectedUser
+) => {
   const [isSelectedUserOnline, setIsSelectedUserOnline] = useState(false);
   const [isAddingFrined, setIsAddingFriend] = useState(false);
   const userDataRef = useRef(null);
@@ -55,7 +60,6 @@ export const useChatSelection = (userDetails, resetChat, refetch) => {
       queryString?.friend?.length > 0 &&
       userDataRef.current
     ) {
-      console.log("settinguser");
       setSelectedUser(getSelectedUser(queryString?.friend));
     }
   }, [
@@ -72,7 +76,6 @@ export const useChatSelection = (userDetails, resetChat, refetch) => {
     isSelectedUserOnline,
     setIsSelectedUserOnline,
     isAddingFrined,
-    selectedUser,
     removeSelectedUser,
     handleChatSelection,
   };

@@ -1,11 +1,11 @@
 import axios from "axios";
 
-export const getMessages = ({ queryKey }) => {
+export const getMessages = ({ data }) => {
   return axios
     .get("api/message", {
       params: {
-        friendId: queryKey[1],
-        ...queryKey[2],
+        friendId: data[1],
+        ...data[2],
       },
     })
     .then((resp) => resp.data);

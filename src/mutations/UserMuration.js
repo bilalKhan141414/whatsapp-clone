@@ -21,3 +21,26 @@ export const addFriend = (data) => {
     })
     .then((resp) => resp.data);
 };
+
+export const getMessagesByChatIds = (payload) => {
+  return axios
+    .get("api/chat", {
+      params: {
+        ...payload,
+      },
+    })
+    .then((resp) => {
+      const { data } = resp.data;
+      if (data?.length > 0) {
+        return {
+          messages: data,
+          ...payload,
+        };
+      }
+      return {
+        messages: [],
+        ...payload,
+        isDone: true,
+      };
+    });
+};

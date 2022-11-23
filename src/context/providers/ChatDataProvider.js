@@ -7,31 +7,25 @@ import { useChatSelection } from "../../hooks/chat/useChatSelection";
 import { useSocketManager } from "../../hooks/chat/useSocketManager";
 import { contactDetailQuery } from "../../pages/Chat";
 
-const ChatDataProvider = ({
-  message,
-  getUploadeFile = () => {},
-  handleOnKeyPress = () => {},
-  setMessage = () => {},
-  children,
-}) => {
+const ChatDataProvider = ({ children }) => {
   const [typing, setTyping] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   const { data: user, refetch } = useQuery(contactDetailQuery());
 
   const {
-    messages,
+    messageDetails,
     userDetails,
     loadingChatMessages,
     updateLastMessage,
     handleSetMessage,
     resetChat,
     setMessages,
-    setmsgApiData,
+    requestFetchMessages,
     updateStatus,
-  } = useChatManager(user);
+  } = useChatManager(user, selectedUser);
 
   const {
-    selectedUser,
     isAddingFrined,
     userData,
     isSearchResult,
@@ -39,7 +33,13 @@ const ChatDataProvider = ({
     removeSelectedUser,
     setIsSelectedUserOnline,
     handleChatSelection,
-  } = useChatSelection(userDetails, resetChat, refetch);
+  } = useChatSelection(
+    userDetails,
+    resetChat,
+    refetch,
+    selectedUser,
+    setSelectedUser
+  );
 
   const { socketManager } = useSocketManager({
     setTyping,
@@ -52,28 +52,24 @@ const ChatDataProvider = ({
   return (
     <ChatProvider
       value={{
-        value: message,
         userDetails,
         users: userData,
         selectedUser,
         isSearchResult,
         typing,
         isAddingFrined,
-        messages,
+        messageDetails: messageDetails,
         loadingChatMessages,
         isSelectedUserOnline,
         isMobileView: window.innerWidth <= 768,
         removeSelectedUser,
+        requestFetchMessages,
         updateLastMessage,
         setIsSelectedUserOnline,
         setMessages,
-        setmsgApiData,
         handleSetMessage,
         setTyping,
         updateStatus,
-        getUploadeFile,
-        handleOnKeyPress,
-        handleOnChange: (event) => setMessage(event.target.value),
         handleChatSelection,
         emitFetchFriendStatus: socketManager.emitFetchFriendStatus,
         emitTypingStatus: socketManager.emitTypingStatus,

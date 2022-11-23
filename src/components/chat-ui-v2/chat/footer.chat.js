@@ -4,7 +4,7 @@ import { UserSingleIcon } from "../user-icon/user-single-icon";
 import sendMessageIcon from "./../../../assets/images/send-message.png";
 import { EmojiPicker } from "./emoji-picker/emoji-picker";
 
-const ChatFooter = () => {
+const ChatFooter = ({ isMobileView }) => {
   const [showEmoji, setShowEmoji] = useState(false);
 
   const {
@@ -16,6 +16,7 @@ const ChatFooter = () => {
     <div className='relative'>
       {showEmoji && (
         <EmojiPicker
+          isMobileView={isMobileView}
           onClickOutside={(e) => showEmoji && setShowEmoji(false)}
           setEmoji={(val) => {
             inputElement.current.value += val;

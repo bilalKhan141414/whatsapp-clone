@@ -1,5 +1,9 @@
 import { useMutation } from "react-query";
-import { addFriend, searchUsers } from "../../mutations/UserMuration";
+import {
+  addFriend,
+  getMessagesByChatIds,
+  searchUsers,
+} from "../../mutations/UserMuration";
 
 const useChatMutations = () => {
   const { data: users = [], mutate: searchFriend } = useMutation(
@@ -11,10 +15,18 @@ const useChatMutations = () => {
     addFriend
   );
 
+  const {
+    data: userMessages,
+    mutateAsync: requestFetchMessages,
+    isLoading: isLoadingMessages,
+  } = useMutation(["fetch-messages"], getMessagesByChatIds);
   return {
     users,
+    userMessages,
     searchFriend,
     requestAddFriend,
+    isLoadingMessages,
+    requestFetchMessages,
   };
 };
 
