@@ -21,6 +21,8 @@ const checkForOnlySmily = (text) => text.length <= 4 && !anyThingNotSmily(text);
 const ChatMessage = ({
   message,
   isReply,
+  shouldScrollToBottom,
+  isLastMessage,
   serverMessage,
   children,
   isGroup,
@@ -40,7 +42,6 @@ const ChatMessage = ({
         }),
         (status) => {
           setIsSending(false);
-          console.log(status);
           updateStatus(message.id, status);
         }
       );
@@ -88,13 +89,15 @@ const ChatMessage = ({
         .getElementById(message.id)
         ?.addEventListener("click", (e) => handleScroll());
       if (message.userStatus === USER_STATUS.OFFLINE) {
-        console.log("userStatus,", USER_STATUS);
         emitMessageStatus({
           to: message.from,
           id: message.id,
           status: MESSAGE_STATUS.RECEIVED,
         });
       }
+      // if (!shouldScrollToBottom && message.status !== MESSAGE_STATUS.SEEN) {
+      //   document.getElementById(message.id).scrollIntoView();
+      // }
     }
 
     return () => {
@@ -133,8 +136,10 @@ const ChatMessage = ({
           )}
           <div
             className={`flex ${
-              onlySmily ? "flex-col" : "justify-end"
-            } items-center flex-wrap`}>
+              onlySmily
+                ? `flex-col items-start ${!isReply ? "items-end" : ""}`
+                : "justify-end items-center"
+            }  flex-wrap`}>
             <p
               className={`${
                 onlySmily ? "w-full text-3xl" : "text-sm"
@@ -142,8 +147,14 @@ const ChatMessage = ({
               {message.text}
             </p>
             <p
-              className={`h-7 text-right flex justify-end items-end text-mini text-gray-500  ml-2 -mr-1`}
-              style={{ marginBottom: 3 }}>
+              className={`h-7 flex ${
+                onlySmily && isReply ? "" : "items-end text-right "
+              } justify-end text-mini text-gray-500  ml-2 -mr-1`}
+              style={{
+                marginBottom: 3,
+                color: "#0000008c",
+                fontSize: "0.65rem",
+              }}>
               {message.time}
               {isReply && (
                 <div className='inline-block'>

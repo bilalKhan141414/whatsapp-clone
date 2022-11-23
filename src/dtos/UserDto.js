@@ -9,5 +9,6 @@ export class UserDto {
     this.userName = user?.userName;
     this.friends = user?.friends;
     this.friendsIds = user?.friendsIds;
+    this.chatIds = user?.chatIds;
   }
 }

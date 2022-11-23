@@ -7,7 +7,7 @@ const BackNavigationButton = () => {
       width='19px'
       height='19px'
       viewBox='0 0 52 52'
-      dataName='Layer 1'
+      dataname='Layer 1'
       className='mr-1'
       id='Layer_1'
       onClick={removeSelectedUser}

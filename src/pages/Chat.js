@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import Sidebar from "../components/chat-ui-v2/sidebar/sidebar";
 import ChatDataProvider from "../context/providers/ChatDataProvider";
 import { getUserDetails } from "../queries/UserQueries";
@@ -8,28 +7,17 @@ import {
 } from "../components/chat-ui-v2/chat";
 import { useQueryString } from "../shared/custom-hooks/useQueryString";
 
-// localStorage.debug = '*';
-
 export const contactDetailQuery = () => ({
   queryKey: ["detail"],
   queryFn: async () => getUserDetails(),
 });
 
 export default function Chat({ location }) {
-  const [message, setMessage] = useState("");
-  const [attachments, setAttachments] = useState([]);
   const { queryString } = useQueryString();
 
-  const getUploadeFile = (fileData) => {
-    setAttachments((prevState) => [...prevState, fileData]);
-  };
   const isChatSelected = !!queryString?.friend && !queryString?.search;
   return (
-    <ChatDataProvider
-      message={message}
-      getUploadeFile={getUploadeFile}
-      attachments={attachments}
-      setMessage={setMessage}>
+    <ChatDataProvider>
       <div
         className='h-screen overflow-hidden '
         style={{ backgroundColor: "#edf2f7" }}>

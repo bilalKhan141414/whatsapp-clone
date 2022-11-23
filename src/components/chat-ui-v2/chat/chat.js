@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { ChatLoader } from "../loaders/chat.loader";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useSendMessage } from "../../../hooks/chat/useSendMessage";
 import { useChatContext } from "../../../shared/custom-hooks/useChatContext";
 import { useQueryString } from "../../../shared/custom-hooks/useQueryString";
@@ -10,6 +10,7 @@ import { ChatHeader } from "./header.chat";
 import { DateLabel, NotificationLabel } from "./labels";
 import ChatMessage from "./message.chat";
 import { getYesterday } from "../../../utils/date.util";
+import { useChatScrolling } from "../../../hooks/chat/useChatScrolling";
 
 export const getFormatedTime = (fullDate) => {
   const date = new Date(fullDate);
@@ -17,8 +18,8 @@ export const getFormatedTime = (fullDate) => {
   const firstPart = formatedDate.split(" ")[0].split(":");
   return `${firstPart[0]}:${firstPart[1]} ${formatedDate.split(" ")[1]}`;
 };
-let lastDate = null;
 
+let lastDate = null;
 const GetDateChange = ({ date }) => {
   const today = new Date().toLocaleDateString();
   const { yesterDay } = getYesterday();
@@ -42,27 +43,25 @@ const GetDateChange = ({ date }) => {
     return <DateLabel key={date} date={foramtedDate} />;
   }
 };
+
 const isSameUser = (index, messages, currentUser) =>
   index === 0 ? false : messages[index - 1].from === currentUser;
+
 export const ChatContainer = () => {
-  useSendMessage();
-  const { queryString } = useQueryString();
-  const chatContainerRef = useRef(null);
   const {
     emitFetchFriendStatus,
-    // setmsgApiData,
     setIsSelectedUserOnline,
-    messages,
+    messageDetails,
     selectedUser,
+    isMobileView,
     loadingChatMessages,
   } = useChatContext();
-  useEffect(() => {
-    const handleScroll = (e) => {};
-    document.addEventListener("scroll", handleScroll);
-    return () => {
-      document.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+
+  const { queryString } = useQueryString();
+
+  const { chatContainerRef, handleScroll } = useChatScrolling();
+
+  useSendMessage();
 
   useEffect(() => {
     if (queryString.friend) {
@@ -72,24 +71,26 @@ export const ChatContainer = () => {
     }
   }, [queryString.friend]);
 
+  const shouldScrollToBottom = +selectedUser?.lastMessage?.totalUnSeen === 0;
   return (
-    <div className='w-full h-full absolute top-0 left-0 md:relative md:w-2/3 z-10 border flex flex-col chat-container'>
+    <div className='w-full h-full bg-white absolute top-0 left-0 md:relative md:w-2/3 z-10 border flex flex-col chat-container'>
       <ChatHeader />
       <div
         id={`chat-container`}
         ref={chatContainerRef}
+        onScroll={handleScroll}
         className='flex-1 overflow-auto relative'
         style={{ backgroundColor: "#DAD3CC" }}>
         {loadingChatMessages && <ChatLoader />}
         <div className='py-2 px-3 '>
           <NotificationLabel />
-          {!loadingChatMessages &&
-            messages?.length > 0 &&
-            messages.map((message, index) => {
+          {messageDetails?.messages?.length > 0 &&
+            messageDetails?.messages.map((message, index) => {
               if (index === 0) lastDate = null;
               return (
                 <ChatMessage
                   key={index}
+                  messageD={message}
                   isReply={message.from === localStorageHelpers.User.id}
                   message={{
                     id: message.id,
@@ -100,8 +101,14 @@ export const ChatContainer = () => {
                     to: message.to,
                     from: message.from,
                     userStatus: message.userStatus,
-                    sameUser: isSameUser(index, messages, message.from),
+                    sameUser: isSameUser(
+                      index,
+                      messageDetails?.messages,
+                      message.from
+                    ),
                   }}
+                  isLastMessage={messageDetails?.messages?.length - 1 === index}
+                  shouldScrollToBottom={shouldScrollToBottom}
                   serverMessage={message.ServerMessage}>
                   <GetDateChange date={message.date} />
                 </ChatMessage>
@@ -110,7 +117,7 @@ export const ChatContainer = () => {
         </div>
       </div>
 
-      <ChatFooter />
+      <ChatFooter isMobileView={isMobileView} />
     </div>
   );
 };
