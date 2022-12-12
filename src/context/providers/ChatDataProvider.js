@@ -2,15 +2,18 @@
 import { useState } from "react";
 import { useQuery } from "react-query";
 import { ChatProvider } from "../../context/chat.context";
+import { useAudio } from "../../hooks/chat/useAudio";
 import { useChatManager } from "../../hooks/chat/useChatManager";
 import { useChatSelection } from "../../hooks/chat/useChatSelection";
 import { useSocketManager } from "../../hooks/chat/useSocketManager";
-import { contactDetailQuery } from "../../pages/Chat";
+import { contactDetailQuery } from "../../pages/chat.page";
 
 const ChatDataProvider = ({ children }) => {
   const [typing, setTyping] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedMessage, setSelectedMessage] = useState(null);
 
+  const { startRecording, toggleRecording } = useAudio();
   const { data: user, refetch } = useQuery(contactDetailQuery());
 
   const {
@@ -62,6 +65,10 @@ const ChatDataProvider = ({ children }) => {
         loadingChatMessages,
         isSelectedUserOnline,
         isMobileView: window.innerWidth <= 768,
+        selectedMessage: selectedMessage,
+        startRecording,
+        onMessageEdit: setSelectedMessage,
+        toggleRecording,
         removeSelectedUser,
         requestFetchMessages,
         updateLastMessage,

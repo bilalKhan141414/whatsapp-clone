@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQueryString } from "../../shared/custom-hooks/useQueryString";
 import useChatMutations from "./useChatMutations";
 
@@ -19,7 +19,10 @@ export const useChatSelection = (
   const { users, requestAddFriend, searchFriend } = useChatMutations();
 
   const isSearchResult = queryString?.search?.length > 0;
-  const userData = isSearchResult ? users?.data : userDetails?.friends;
+  const userData = useMemo(
+    () => (isSearchResult ? users?.data : userDetails?.friends),
+    [users?.data, userDetails?.friends]
+  );
 
   useEffect(() => {
     userDataRef.current = userData;
@@ -47,7 +50,6 @@ export const useChatSelection = (
     selectedUser?._id !== friendId && resetChat();
   };
   const removeSelectedUser = () => {
-    setSelectedUser(null);
     removeFromQueryString("friend");
     resetChat();
   };
@@ -61,6 +63,9 @@ export const useChatSelection = (
       userDataRef.current
     ) {
       setSelectedUser(getSelectedUser(queryString?.friend));
+    }
+    if (!queryString.friend) {
+      setSelectedUser(null);
     }
   }, [
     queryString?.friend,

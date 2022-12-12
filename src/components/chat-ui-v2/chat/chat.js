@@ -8,7 +8,7 @@ import { localStorageHelpers } from "../../../shared/Helpers/general";
 import ChatFooter from "./footer.chat";
 import { ChatHeader } from "./header.chat";
 import { DateLabel, NotificationLabel } from "./labels";
-import ChatMessage from "./message.chat";
+import ChatMessage from "./message/message.chat";
 import { getYesterday } from "../../../utils/date.util";
 import { useChatScrolling } from "../../../hooks/chat/useChatScrolling";
 
@@ -47,7 +47,7 @@ const GetDateChange = ({ date }) => {
 const isSameUser = (index, messages, currentUser) =>
   index === 0 ? false : messages[index - 1].from === currentUser;
 
-export const ChatContainer = () => {
+export const ChatManager = () => {
   const {
     emitFetchFriendStatus,
     setIsSelectedUserOnline,
@@ -90,6 +90,7 @@ export const ChatContainer = () => {
               return (
                 <ChatMessage
                   key={index}
+                  hide={index !== 0}
                   messageD={message}
                   isReply={message.from === localStorageHelpers.User.id}
                   message={{
