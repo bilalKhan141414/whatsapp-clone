@@ -67,7 +67,7 @@ class SendMessageManager {
   handleKeyPress = (event) => {
     if (
       !this.shiftPress &&
-      event.keyCode === 13 &&
+      event.key === "Enter" &&
       event.target.value.trim().length > 0
     ) {
       this.#sendMessage(event.target.value);

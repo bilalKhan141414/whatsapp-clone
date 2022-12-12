@@ -33,3 +33,27 @@
     }
   }
 }
+
+#audioPreview{
+  wave{
+   & > wave{
+    border:unset !important;
+    padding-left:11px;
+
+    &::before{
+      z-index: 9;
+      content: "";
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      right: 0;
+      transform: translateY(-50%);
+      background: #449388;
+      border: 1px solid #dce2e5;
+    }
+   }
+  }
+
+}

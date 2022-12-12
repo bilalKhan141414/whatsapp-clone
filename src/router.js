@@ -5,12 +5,16 @@ import {
   Route,
   useRouteError,
 } from "react-router-dom";
-import Login from "./components/Auth/Login";
-import Signup from "./components/Auth/Signup";
 import ProtectedRootLayout from "./components/ProtectedRootLayout";
 import RootLayout from "./components/RootLayout";
 import UnProtectedRootLayout from "./components/UnProtectedRootLayout";
-import Chat, { loader as userDetailsLoader } from "./pages/Chat";
+import {
+  ChatPage,
+  loader as userDetailsLoader,
+  LoginPage,
+  SignupPage,
+} from "./pages";
+
 const ProtectedErrorElement = () => {
   let error = useRouteError();
   console.error(error);
@@ -45,13 +49,13 @@ export const router = (queryClient) =>
             errorElement={<ProtectedErrorElement />}>
             <Route
               index
-              element={<Chat />}
+              element={<ChatPage />}
               loader={userDetailsLoader(queryClient)}
             />
           </Route>
           <Route element={<UnProtectedRootLayout />}>
-            <Route path='/login' element={<Login />} />
-            <Route path='/register' element={<Signup />} />
+            <Route path='/login' element={<LoginPage />} />
+            <Route path='/register' element={<SignupPage />} />
           </Route>
         </Route>
       </>

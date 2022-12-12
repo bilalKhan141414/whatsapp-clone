@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef, useState } from "react";
-import { MESSAGE_STATUS } from "../../constants/events.constant";
 import { useQueryString } from "../../shared/custom-hooks/useQueryString";
 import useChatMutations from "./useChatMutations";
+import { updateLoop } from "./utils/chat-manager.util";
 const msgApiInitialData = {
   start: 0,
   limit: 50,
@@ -10,42 +10,6 @@ const msgApiInitialData = {
 const initMessages = {
   messages: [],
   ...msgApiInitialData,
-};
-const updateUnSeenCount = (lastMessage, status) => {
-  const { totalUnSeen } = lastMessage;
-  if (status === MESSAGE_STATUS.SEEN) {
-    totalUnSeen >= 1 && lastMessage.totalUnSeen--;
-    return lastMessage;
-  }
-
-  lastMessage.totalUnSeen++;
-  return lastMessage;
-};
-const updateLoop = (friends, message) => {
-  var i = friends.length;
-  const updatedFriends = [...friends];
-  for (; i--; ) {
-    if (updatedFriends[i].chatIds.includes(message?.chatId)) {
-      if (!updatedFriends[i].lastMessage) {
-        updatedFriends[i].lastMessage = { ...message };
-      }
-      //Response
-      //update ONLY last message unseen message count if user is not SENDING reply
-      if (message && !message.isReply) {
-        updatedFriends[i].lastMessage = updateUnSeenCount(
-          { ...updatedFriends[i].lastMessage },
-          message.status
-        );
-      }
-
-      //Reply
-      // update the last message of selected user
-      const { totalUnSeen } = updatedFriends[i].lastMessage;
-      updatedFriends[i].lastMessage = { ...message, totalUnSeen };
-      return updatedFriends;
-    }
-  }
-  return updatedFriends;
 };
 export const useChatManager = (user, selectedUser) => {
   const [messages, setMessages] = useState(initMessages);
@@ -87,14 +51,22 @@ export const useChatManager = (user, selectedUser) => {
         return;
       }
       //else user is scrolling to view old messages
-      const { start: newStart, limit: newLimit } = restUserMsgs;
+      const { start: newStart, limit: newLimit, messages } = restUserMsgs;
       const { start, limit } = existingChat;
 
       if (start !== newStart && limit !== newLimit) {
-        restUserMsgs.messages.push(...existingChat.messages);
-
-        messagesRef.current[chatId] = restUserMsgs;
-        setMessages(restUserMsgs);
+        setMessages((prevState) => {
+          const updatedMessages = [...messages, ...prevState.messages];
+          messagesRef.current[chatId] = {
+            start: newStart,
+            limit: newLimit,
+            messages: updatedMessages,
+          };
+          return {
+            ...prevState,
+            ...messagesRef.current[chatId],
+          };
+        });
       }
     } else {
       if (userMessages?.isDone && messagesRef.current[userMessages?.chatId]) {

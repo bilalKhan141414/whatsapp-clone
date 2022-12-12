@@ -7,11 +7,11 @@ import {
 
 const useChatMutations = () => {
   const { data: users = [], mutate: searchFriend } = useMutation(
-    ["search-users"],
+    ["search-users"].xyzGlobalKey(),
     searchUsers
   );
   const { mutateAsync: requestAddFriend } = useMutation(
-    ["add-friend"],
+    ["add-friend"].xyzGlobalKey(),
     addFriend
   );
 
@@ -19,7 +19,7 @@ const useChatMutations = () => {
     data: userMessages,
     mutateAsync: requestFetchMessages,
     isLoading: isLoadingMessages,
-  } = useMutation(["fetch-messages"], getMessagesByChatIds);
+  } = useMutation(["fetch-messages"].xyzGlobalKey(), getMessagesByChatIds);
   return {
     users,
     userMessages,

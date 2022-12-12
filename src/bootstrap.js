@@ -36,7 +36,6 @@ Error.UnAuthorized = (message) => {
   error.status = 401;
   return error;
 };
-
 axios.defaults.baseURL = window.ENDPOINT;
 
 const UN_PROTECTED_ROUTES = ["/api/auth/login", "/api/auth/register"];

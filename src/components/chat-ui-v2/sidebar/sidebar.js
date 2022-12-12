@@ -17,6 +17,7 @@ const Sidebar = () => {
   const hideSideBar = isMobileView && selectedUser;
   return (
     <div
+      data-selected={!!selectedUser}
       className={`${
         hideSideBar ? "hidden" : ""
       } w-full bg-white z-20 h-full absolute top-0 left-0 md:relative md:w-1/3 border flex flex-col`}>
